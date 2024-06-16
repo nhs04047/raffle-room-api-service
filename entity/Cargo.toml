@@ -1,0 +1,6 @@
+[lib]
+name = "entity"
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm = { version = "0.12" }

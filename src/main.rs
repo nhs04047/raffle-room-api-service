@@ -5,6 +5,8 @@ use std::env;
 use actix_web::{ web, App, HttpServer};
 
 mod db;
+mod routers;
+mod config;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -20,6 +22,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
         .app_data(web::Data::new(db.clone()))
+        .configure(routers::init)
     })
     .bind(&server_location)?
     .run()
