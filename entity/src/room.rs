@@ -8,7 +8,7 @@ pub struct Model {
   pub name: String,
   pub password: String,
   pub set_draw_include_owner: i32,
-  pub set_draw_order: string,
+  pub set_draw_order: String,
   pub status: i32,
   pub created_at: DateTime,
   pub updated_at: DateTime
@@ -20,7 +20,7 @@ pub enum Relation {
   JoinedUser,
   #[sea_orm(has_many = "super::draw_item::Entity")]
   DrawItem,
-  #[sea_orm(has_many = "super::draw::entity")]
+  #[sea_orm(has_many = "super::draw::Entity")]
   Draw
 }
 
@@ -36,7 +36,7 @@ impl Related<super::draw_item::Entity> for Entity {
   }
 }
 
-impl Related<super::Draw::Entity> for Entity {
+impl Related<super::draw::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::Draw.def()
   }

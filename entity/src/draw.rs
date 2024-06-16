@@ -1,7 +1,7 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "joined_user")]
+#[sea_orm(table_name = "draw")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = true)]
   pub id: i32,
@@ -14,7 +14,7 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
   #[sea_orm(
-    belongs_to = "suber::room::Entity",
+    belongs_to = "super::room::Entity",
     from = "Column::RoomId",
     to = "super::room::Column::Id",
     on_update = "Cascade",
