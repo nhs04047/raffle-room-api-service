@@ -13,8 +13,8 @@ impl MigratorTrait for Migrator {
         vec![
             Box::new(m20240616_154809_create_room::Migration),
             Box::new(m20240618_151811_create_joined_user::Migration),
-            Box::new(m20240618_151824_create_draw::Migration),
             Box::new(m20240618_151832_create_draw_item::Migration),
+            Box::new(m20240618_151824_create_draw::Migration),
         ]
     }
 }

@@ -9,23 +9,23 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(JoinedUser::Table)
+                    .table(DrawItem::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(JoinedUser::Id)
+                        ColumnDef::new(DrawItem::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(JoinedUser::Name).string().not_null())
-                    .col(ColumnDef::new(JoinedUser::RoomId).integer().not_null())
-                    .col(ColumnDef::new(JoinedUser::Qty).integer().not_null())
-                    .col(ColumnDef::new(JoinedUser::CreatedAt).date_time().not_null())
+                    .col(ColumnDef::new(DrawItem::Name).string().not_null())
+                    .col(ColumnDef::new(DrawItem::RoomId).integer().not_null())
+                    .col(ColumnDef::new(DrawItem::Qty).integer().not_null())
+                    .col(ColumnDef::new(DrawItem::CreatedAt).date_time().not_null())
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk-joined_user-room_id")
-                            .from(JoinedUser::Table, JoinedUser::RoomId)
+                            .name("fk-draw_item-room_id")
+                            .from(DrawItem::Table, DrawItem::RoomId)
                             .to(Room::Table, Room::Id)
                             .on_update(ForeignKeyAction::Cascade)
                             .on_delete(ForeignKeyAction::SetNull),
@@ -37,13 +37,13 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(JoinedUser::Table).to_owned())
+            .drop_table(Table::drop().table(DrawItem::Table).to_owned())
             .await
     }
 }
 
 #[derive(Iden)]
-enum JoinedUser {
+enum DrawItem {
     Table,
     Id,
     Name,
