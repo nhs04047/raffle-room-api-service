@@ -19,6 +19,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(JoinedUser::Name).string().not_null())
+                    .col(ColumnDef::new(JoinedUser::Tag).string().not_null())
                     .col(ColumnDef::new(JoinedUser::RoomId).integer().not_null())
                     .col(ColumnDef::new(JoinedUser::CreatedAt).date_time().not_null())
                     .foreign_key(
@@ -46,6 +47,7 @@ enum JoinedUser {
     Table,
     Id,
     Name,
+    Tag,
     RoomId,
     CreatedAt,
 }
