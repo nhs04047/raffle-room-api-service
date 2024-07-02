@@ -6,6 +6,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = true)]
   pub id: i32,
   pub name: String,
+  pub seq: i32,
   pub room_id: i32,
   pub qty: i32,
   pub created_at: DateTime,

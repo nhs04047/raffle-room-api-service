@@ -8,10 +8,11 @@ mod db;
 mod routers;
 mod config;
 
+mod models;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-
     let server_host = env::var("SERVER_HOST").unwrap();
     let server_port = env::var("SERVER_PORT").unwrap();
     let server_location = server_host + ":" + &server_port;
