@@ -19,6 +19,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(DrawItem::Name).string().not_null())
+                    .col(ColumnDef::new(DrawItem::Seq).integer().not_null())
                     .col(ColumnDef::new(DrawItem::RoomId).integer().not_null())
                     .col(ColumnDef::new(DrawItem::Qty).integer().not_null())
                     .col(ColumnDef::new(DrawItem::CreatedAt).date_time().not_null())
@@ -47,6 +48,7 @@ enum DrawItem {
     Table,
     Id,
     Name,
+    Seq,
     RoomId,
     Qty,
     CreatedAt,
