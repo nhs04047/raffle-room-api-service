@@ -1,8 +1,30 @@
+use chrono::NaiveDateTime;
 use sea_orm::{DatabaseConnection,Set, EntityTrait, DbErr, ActiveModelTrait};
 use entity::room::{self, Entity as Room};
 use serde::Deserialize;
 
-use chrono::NaiveDateTime;
+#[derive(Deserialize, Debug)]
+pub struct NewRoom {
+  pub name: String,
+  pub password: String,
+  pub set_draw_include_owner: i32,
+  pub set_draw_order: String,
+  pub status: i32,
+  pub created_at: NaiveDateTime,
+  pub updated_at: NaiveDateTime
+}
+
+#[derive(Deserialize, Debug)]
+pub struct UpdateRoom {
+  pub id: i32,
+  pub name: Option<String>,
+  pub password: Option<String>,
+  pub set_draw_include_owner: Option<i32>,
+  pub set_draw_order: Option<String>,
+  pub status: Option<i32>,
+  pub updated_at: NaiveDateTime
+}
+
 
 
 pub async fn get_room_by_id (
@@ -14,25 +36,13 @@ pub async fn get_room_by_id (
 
 pub async fn get_rooms (
   db: &DatabaseConnection
-) -> Result<Option<room::Model>, DbErr>{
-  Room::find().one(db).await
-}
-
-#[derive(Deserialize, Debug)]
-
-pub struct NewRoom {
-  pub name: String,
-  pub password: String,
-  pub set_draw_include_owner: i32,
-  pub set_draw_order: String,
-  pub status: i32,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime
+) -> Result<Vec<room::Model>, DbErr>{
+  Room::find().all(db).await
 }
 
 pub async fn save_room (
   db: &DatabaseConnection,
-  data: &NewRoom
+  data: NewRoom
 ) -> Result<room::Model, DbErr> {
   let room_model = room::ActiveModel {
     name: Set(data.name.to_owned()),
@@ -48,21 +58,9 @@ pub async fn save_room (
 room_model.insert(db).await
 }
 
-#[derive(Deserialize, Debug)]
-
-pub struct UpdateRoom {
-  pub id: i32,
-  pub name: Option<String>,
-  pub password: Option<String>,
-  pub set_draw_include_owner: Option<i32>,
-  pub set_draw_order: Option<String>,
-  pub status: Option<i32>,
-  pub updated_at: NaiveDateTime
-}
-
 pub async fn update_room (
   db: &DatabaseConnection,
-  data: &UpdateRoom
+  data: UpdateRoom
 ) -> Result<room::Model, DbErr> {
   let room_model = Room::find_by_id(data.id).one(db).await?;
   let mut room_model: room::ActiveModel = room_model.unwrap().into();
