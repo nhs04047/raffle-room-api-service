@@ -40,7 +40,7 @@ pub async fn get_rooms (
   Room::find().all(db).await
 }
 
-pub async fn save_room (
+pub async fn insert_room (
   db: &DatabaseConnection,
   data: NewRoom
 ) -> Result<room::Model, DbErr> {

@@ -18,7 +18,7 @@ pub async fn get_draws (
   Draw::find().all(db).await
 }
 
-pub async fn save_room (
+pub async fn insert_draw (
   db: &DatabaseConnection,
   data: NewDraw
 ) -> Result<draw::Model, DbErr> {
