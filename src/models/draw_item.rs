@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use sea_orm::{DatabaseConnection,Set, EntityTrait, DbErr, ActiveModelTrait, InsertResult};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, ColumnTrait, DbErr, EntityTrait, InsertResult, QueryFilter, Set};
 use entity::draw_item::{self, Entity as DrawItem};
 use serde::Deserialize;
 
@@ -19,6 +19,14 @@ pub async fn get_draw_items (
   DrawItem::find().all(db).await
 }
 
+pub async fn get_draws_items_by_room_id (
+  db: &DatabaseConnection,
+  room_id: i32
+) -> Result<Vec<draw_item::Model>, DbErr> {
+  DrawItem::find().filter(draw_item::Column::RoomId.eq(room_id)).all(db).await
+}
+
+
 pub async fn insert_draw_item (
   db: &DatabaseConnection,
   data: NewDrawItem
@@ -31,7 +39,6 @@ pub async fn insert_draw_item (
     created_at: Set(data.created_at),
     ..Default::default()
   };
-
   draw_item_model.insert(db).await
 }
 

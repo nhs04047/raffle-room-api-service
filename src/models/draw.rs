@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use sea_orm::{DatabaseConnection,Set, EntityTrait, DbErr, ActiveModelTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait,ColumnTrait, QueryFilter, Set};
 use entity::draw::{self, Entity as Draw};
 use serde::Deserialize;
 
@@ -16,6 +16,13 @@ pub async fn get_draws (
   db: &DatabaseConnection
 ) -> Result<Vec<draw::Model>, DbErr> {
   Draw::find().all(db).await
+}
+
+pub async fn get_draws_by_room_id (
+  db: &DatabaseConnection,
+  room_id: i32
+) -> Result<Vec<draw::Model>, DbErr> {
+  Draw::find().filter(draw::Column::RoomId.eq(room_id)).all(db).await
 }
 
 pub async fn insert_draw (
