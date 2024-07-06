@@ -25,8 +25,6 @@ pub struct UpdateRoom {
   pub updated_at: NaiveDateTime
 }
 
-
-
 pub async fn get_room_by_id (
   db: &DatabaseConnection,
   id: i32,
