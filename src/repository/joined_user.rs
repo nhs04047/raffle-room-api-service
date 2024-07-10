@@ -1,15 +1,7 @@
-use chrono::NaiveDateTime;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter,ColumnTrait, Set};
 use entity::joined_user::{self, Entity as JoinedUser};
-use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
-pub struct NewUser {
-  pub name: String,
-  pub tag: String,
-  pub room_id: i32,
-  pub created_at: NaiveDateTime,
-}
+use super::structs;
 
 pub async fn get_joined_user_by_id (
   db: &DatabaseConnection,
@@ -33,7 +25,7 @@ pub async fn get_joined_users (
 
 pub async fn save_joined_user (
   db: &DatabaseConnection,
-  data: NewUser
+  data: structs::NewUserModel
 ) -> Result<joined_user::Model, DbErr> {
   let joined_user = joined_user::ActiveModel {
     name: Set(data.name.to_owned()),

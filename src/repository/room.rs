@@ -1,29 +1,7 @@
-use chrono::NaiveDateTime;
 use sea_orm::{DatabaseConnection,Set, EntityTrait, DbErr, ActiveModelTrait};
 use entity::room::{self, Entity as Room};
-use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
-pub struct NewRoom {
-  pub name: String,
-  pub password: String,
-  pub set_draw_include_owner: i32,
-  pub set_draw_order: String,
-  pub status: i32,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime
-}
-
-#[derive(Deserialize, Debug)]
-pub struct UpdateRoom {
-  pub id: i32,
-  pub name: Option<String>,
-  pub password: Option<String>,
-  pub set_draw_include_owner: Option<i32>,
-  pub set_draw_order: Option<String>,
-  pub status: Option<i32>,
-  pub updated_at: NaiveDateTime
-}
+use super::structs;
 
 pub async fn get_room_by_id (
   db: &DatabaseConnection,
@@ -40,7 +18,7 @@ pub async fn get_rooms (
 
 pub async fn insert_room (
   db: &DatabaseConnection,
-  data: NewRoom
+  data: structs::NewRoomModel
 ) -> Result<room::Model, DbErr> {
   let room_model = room::ActiveModel {
     name: Set(data.name.to_owned()),
@@ -58,7 +36,7 @@ room_model.insert(db).await
 
 pub async fn update_room (
   db: &DatabaseConnection,
-  data: UpdateRoom
+  data: structs::UpdateRoomModel
 ) -> Result<room::Model, DbErr> {
   let room_model = Room::find_by_id(data.id).one(db).await?;
   let mut room_model: room::ActiveModel = room_model.unwrap().into();

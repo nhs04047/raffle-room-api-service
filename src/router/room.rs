@@ -1,5 +1,9 @@
 use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
 
+use crate::{
+  service::{room as RoomService, structs as RoomStructs}
+};
+
 use sea_orm::DatabaseConnection;
 
 use crate::{
@@ -20,11 +24,27 @@ pub async fn create_rooms(
   body: web::Json<NewRoomDto>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
-  HttpResponse::Created().json(BaseResponse {
-    result_code: 202,
-    result_msg: String::from("Created"),
-    result_data: Some({})
-  })
+  let result = RoomService::create_room(
+    data.get_ref(),
+    RoomStructs::NewRoom::from_dto(body.0)
+  ).await;
+
+  match result {
+    Ok(_) => {
+        HttpResponse::Created().json(BaseResponse {
+            result_code: 201,
+            result_msg: String::from("Created"),
+            result_data: Some({}),
+        })
+    },
+    Err(e) => {
+        HttpResponse::InternalServerError().json(BaseResponse::<()> {
+            result_code: 500,
+            result_msg: format!("Error creating room: {}", e),
+            result_data: None,
+        })
+    },
+  }
 }
 
 #[get("/rooms")]

@@ -1,16 +1,7 @@
-use chrono::NaiveDateTime;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait,ColumnTrait, QueryFilter, Set};
 use entity::draw::{self, Entity as Draw};
-use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
-pub struct NewDraw {
-  pub room_id: i32,
-  pub user_id: i32,
-  pub draw_item_id: i32,
-  pub created_at: NaiveDateTime,
-}
-
+use super::structs;
 
 pub async fn get_draws (
   db: &DatabaseConnection
@@ -27,7 +18,7 @@ pub async fn get_draws_by_room_id (
 
 pub async fn insert_draw (
   db: &DatabaseConnection,
-  data: NewDraw
+  data: structs::NewDrawModel
 ) -> Result<draw::Model, DbErr> {
   let draw_model = draw::ActiveModel {
     room_id: Set(data.room_id),
