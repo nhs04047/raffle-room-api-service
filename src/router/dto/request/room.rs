@@ -17,3 +17,12 @@ pub struct UpdateRoomDto {
   pub set_draw_include_owner: Option<i32>,
   pub set_draw_order: Option<String>,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct UpdateRoomDtoParams {
+  pub id: i32,
+  pub name: Option<String>,
+  pub password: Option<String>,
+  pub set_draw_include_owner: Option<i32>,
+  pub set_draw_order: Option<String>,
+}

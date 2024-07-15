@@ -1,19 +1,30 @@
-use crate::{service::structs::{NewRoom, Room}, router::dto, repository::structs::NewRoomModel};
+use crate::{repository::structs::{NewRoomModel, UpdateRoomModel}, router::dto, service::structs::{self, NewRoom, Room, UpdateRoom}};
 use super::structs::{SetDrawIncludeOwnerFlag, SetDrawOrderFlag, RoomStatusFlag};
+use chrono::Utc;
+use entity::{draw::Model, 
+  room::{self, Model as RoomModel}};
 
-use entity::
-  room::Model as RoomModel;
+pub trait Mapper<From, To> {
+  fn map(from: From) -> To;
+}
 
-impl NewRoom {
-  pub fn from_dto(dto: dto::request::room::NewRoomDto) -> Self {
+pub trait MapperWithId<Id, From, To> {
+  fn map_with_id(id: Id, from: From) -> To;
+}
+
+
+impl Mapper<dto::request::room::NewRoomDto, Self> for NewRoom {
+  fn map(dto: dto::request::room::NewRoomDto) -> Self {
     let set_draw_include_owner = match dto.set_draw_include_owner {
       0 => SetDrawIncludeOwnerFlag::NotIncluded,
-      1 => SetDrawIncludeOwnerFlag::Included
+      1 => SetDrawIncludeOwnerFlag::Included,
+      _ => SetDrawIncludeOwnerFlag::NotIncluded
     };
     
     let set_draw_order = match dto.set_draw_order.as_str() {
       "bulk" => SetDrawOrderFlag::Bulk,
-      "sequential" => SetDrawOrderFlag::Sequential
+      "sequential" => SetDrawOrderFlag::Sequential,
+      _ => SetDrawOrderFlag::Bulk
     };
 
     NewRoom {
@@ -26,8 +37,10 @@ impl NewRoom {
       updated_at: dto.created_at
     }
   }
+}
 
-  pub fn to_model(entity: Self) -> NewRoomModel {
+impl Mapper<Self, NewRoomModel> for NewRoom {
+  fn map(entity: Self) -> NewRoomModel {
     let set_draw_include_owner = match entity.set_draw_include_owner {
       SetDrawIncludeOwnerFlag::NotIncluded => 0,
       SetDrawIncludeOwnerFlag::Included => 1
@@ -52,36 +65,104 @@ impl NewRoom {
       updated_at: entity.updated_at
     }
   }
-
 }
 
-impl Room {
-  pub fn from_model(model: RoomModel) -> Self {
-    let set_draw_include_owner = match model.set_draw_include_owner {
-      0 => SetDrawIncludeOwnerFlag::NotIncluded,
-      1 => SetDrawIncludeOwnerFlag::Included
-    };
-    
-    let set_draw_order = match model.set_draw_order.as_str() {
-      "bulk" => SetDrawOrderFlag::Bulk,
-      "sequential" => SetDrawOrderFlag::Sequential
+impl Mapper<RoomModel, Self> for Room {
+    fn map(model: RoomModel) -> Self {
+      let set_draw_include_owner = match model.set_draw_include_owner {
+        0 => SetDrawIncludeOwnerFlag::NotIncluded,
+        1 => SetDrawIncludeOwnerFlag::Included,
+        _ => SetDrawIncludeOwnerFlag::NotIncluded
+      };
+      
+      let set_draw_order = match model.set_draw_order.as_str() {
+        "bulk" => SetDrawOrderFlag::Bulk,
+        "sequential" => SetDrawOrderFlag::Sequential,
+        _ => SetDrawOrderFlag::Bulk
+      };
+  
+      let status = match model.status {
+        0 => RoomStatusFlag::RecruitingParticipants,
+        1=> RoomStatusFlag::RecruitmentClosed,
+        2=> RoomStatusFlag::DrawCompleted,
+        _ => RoomStatusFlag::RecruitingParticipants
+      };
+  
+      Self {
+        id: model.id,
+        name: model.name,
+        password: model.password,
+        set_draw_include_owner,
+        set_draw_order,
+        status: RoomStatusFlag::RecruitingParticipants,
+        created_at: model.created_at,
+        updated_at: model.created_at
+      }
+    }
+}
+
+impl Mapper<Self, UpdateRoomModel> for UpdateRoom {
+    fn map(entity: Self) -> UpdateRoomModel {
+
+      let set_draw_include_owner = match entity.set_draw_include_owner {
+        Some(SetDrawIncludeOwnerFlag::NotIncluded) => Some(0),
+        Some(SetDrawIncludeOwnerFlag::Included) => Some(1),
+        None => None,
     };
 
-    let status = match model.status {
-      0 => RoomStatusFlag::RecruitingParticipants,
-      1=> RoomStatusFlag::RecruitmentClosed,
-      2=> RoomStatusFlag::DrawCompleted,
+    let set_draw_order = match entity.set_draw_order {
+        Some(SetDrawOrderFlag::Bulk) => Some("bulk".to_owned()),
+        Some(SetDrawOrderFlag::Sequential) => Some("sequential".to_owned()),
+        None => None,
+    };
+
+    let status = match entity.status {
+      Some(RoomStatusFlag::RecruitingParticipants) => Some(0),
+      Some(RoomStatusFlag::RecruitmentClosed) => Some(1),
+      Some(RoomStatusFlag::DrawCompleted) => Some(2),
+      None => None,
+    };
+
+      UpdateRoomModel {
+        id: entity.id,
+        name: entity.name,
+        password: entity.password,
+        set_draw_include_owner,
+        set_draw_order,
+        status,
+        updated_at: entity.updated_at
+      }
+    }
+}
+
+impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
+  fn map_with_id(id: i32, entity: dto::request::room::UpdateRoomDto) -> Self {
+
+    let set_draw_include_owner = match entity.set_draw_include_owner {
+      Some(0) => Some(SetDrawIncludeOwnerFlag::NotIncluded),
+      Some(1) => Some(SetDrawIncludeOwnerFlag::Included),
+      Some(_) | None => None,
+    };
+
+    let set_draw_order = match entity.set_draw_order {
+      Some(v) => {
+        match v.as_str() {
+          "bulk" => Some(SetDrawOrderFlag::Bulk),
+          "sequential" => Some(SetDrawOrderFlag::Sequential),
+          _ => None
+        }
+      },
+      None => None
     };
 
     Self {
-      id: model.id,
-      name: model.name,
-      password: model.password,
-      set_draw_include_owner,
-      set_draw_order,
-      status: RoomStatusFlag::RecruitingParticipants,
-      created_at: model.created_at,
-      updated_at: model.created_at
-    }
+        id,
+        name: entity.name,
+        password: entity.password,
+        set_draw_include_owner,
+        set_draw_order,
+        status: None,
+        updated_at: Utc::now().naive_utc()
+      }
   }
 }

@@ -1,9 +1,10 @@
 
 use chrono::NaiveDateTime;
+use serde::Serialize;
 
 use crate::domain::structs::{SetDrawIncludeOwnerFlag, SetDrawOrderFlag, RoomStatusFlag};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct NewRoom {
   pub name: String,
   pub password: String,
@@ -14,7 +15,7 @@ pub struct NewRoom {
   pub updated_at: NaiveDateTime
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct UpdateRoom {
   pub id: i32,
   pub name: Option<String>,
@@ -25,7 +26,7 @@ pub struct UpdateRoom {
   pub updated_at: NaiveDateTime
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Room {
   pub id: i32,
   pub name: String,
