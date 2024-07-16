@@ -37,3 +37,20 @@ pub struct Room {
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime
 }
+
+#[derive(Debug, Serialize)]
+pub struct NewUser {
+ pub name: String,
+ pub room_id: i32,
+ pub tag: String,
+ pub created_at: NaiveDateTime,
+}
+
+#[derive(Debug, Serialize)]
+pub struct User {
+  pub id: i32,
+  pub name: String,
+  pub tag: String,
+  pub room_id: i32,
+  pub created_at: NaiveDateTime,
+}

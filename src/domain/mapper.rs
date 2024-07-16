@@ -1,8 +1,22 @@
-use crate::{repository::structs::{NewRoomModel, UpdateRoomModel}, router::dto, service::structs::{self, NewRoom, Room, UpdateRoom}};
-use super::structs::{SetDrawIncludeOwnerFlag, SetDrawOrderFlag, RoomStatusFlag};
+use crate::{
+  repository::structs::{
+    NewRoomModel, UpdateRoomModel, NewUserModel
+  }, 
+  service::structs::{
+    NewRoom, NewUser, Room, UpdateRoom, User
+  },
+  router::dto
+};
+use super::structs::{
+  SetDrawIncludeOwnerFlag, SetDrawOrderFlag, RoomStatusFlag
+};
 use chrono::Utc;
-use entity::{draw::Model, 
-  room::{self, Model as RoomModel}};
+use entity::{
+  room::Model as RoomModel,
+  joined_user::Model as JoinedUserModel
+};
+use rand::Rng;
+use serde_json::Map;
 
 pub trait Mapper<From, To> {
   fn map(from: From) -> To;
@@ -164,5 +178,54 @@ impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
         status: None,
         updated_at: Utc::now().naive_utc()
       }
+  }
+}
+
+impl MapperWithId<i32, dto::request::joined_user::NewUserDto, Self> for NewUser {
+  fn map_with_id(room_id: i32, dto: dto::request::joined_user::NewUserDto) -> Self {
+    let random_number: u32 = rand::thread_rng().gen_range(1000..10000);
+    let tag = format!("#{:04}", random_number);
+
+    NewUser {
+      name: dto.name,
+      room_id,
+      tag,
+      created_at: dto.created_at
+    }
+  }
+}
+
+impl Mapper<Self, NewUserModel> for NewUser {
+  fn map(entity: Self) -> NewUserModel {
+    NewUserModel{
+      name: entity.name,
+      tag: entity.tag,
+      room_id: entity.room_id,
+      created_at: entity.created_at
+      }
+  }
+}
+
+impl Mapper<JoinedUserModel, Self> for User {
+  fn map(model: JoinedUserModel) -> Self {
+    Self {
+        id: model.id,
+        name: model.name,
+        tag: model.tag,
+        room_id: model.room_id,
+        created_at: model.created_at,
+    }
+  }
+}
+
+impl Mapper<Self, dto::response::joined_user::UserDto> for User{
+  fn map(entity: Self) -> dto::response::joined_user::UserDto {
+    dto::response::joined_user::UserDto {
+        id: entity.id,
+        name: entity.name,
+        tag: entity.tag,
+        room_id: entity.room_id,
+        created_at: entity.created_at,
+    }
   }
 }

@@ -16,4 +16,5 @@ sea-orm = {version = "^0.12.0", features = ["sqlx-postgres", "runtime-tokio-nati
 chrono = { version = "0.4", features = ["serde"] }
 entity = { path = "entity" }
 migration = { path = "migration" }
+rand = "0.8.5"
 
