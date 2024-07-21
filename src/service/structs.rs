@@ -54,3 +54,33 @@ pub struct User {
   pub room_id: i32,
   pub created_at: NaiveDateTime,
 }
+
+#[derive(Debug, Serialize)]
+pub struct DrawItem {
+  pub id: i32,
+  pub room_id: i32,
+  pub name: String,
+  pub seq: i32,
+  pub qty: i32,
+  pub created_at: NaiveDateTime
+}
+
+#[derive(Debug, Serialize)]
+pub struct NewDrawItem {
+  pub room_id: i32,
+  pub name: String,
+  pub seq: i32,
+  pub qty: i32,
+  pub created_at: NaiveDateTime,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Draw {
+  pub id: i32,
+  pub room_id: i32,
+  pub user_id: i32,
+  pub draw_item_id: i32,
+  // pub user: User,
+  // pub draw_item: DrawItem,
+  pub created_at: NaiveDateTime,
+}

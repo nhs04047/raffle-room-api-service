@@ -47,3 +47,27 @@ pub struct NewDrawItemModel {
   pub qty: i32,
   pub created_at: NaiveDateTime,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct DrawItemInDrawDetailModel {
+  pub id: i32,
+  pub name: String,
+  pub seq: i32
+}
+
+#[derive(Deserialize, Debug)]
+pub struct UserInDrawDetailModel {
+  pub id: i32,
+  pub name: String,
+  pub tag: i32,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct DrawDetaliModel {
+  pub id: i32,
+  pub darw_item: DrawItemInDrawDetailModel,
+  pub user: UserInDrawDetailModel,
+  pub user_id: i32,
+  pub draw_item_id: i32,
+  pub created_at: NaiveDateTime,
+}

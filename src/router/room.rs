@@ -1,19 +1,13 @@
 use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
 
 use crate::{
-  common::structs::{ErrorData, ErrorResponse}, domain::mapper::{Mapper, MapperWithId}, service::{room as RoomService, structs as RoomStructs}
+  common::structs::{ErrorData, BaseResponse, ErrorResponse},
+  domain::mapper::{Mapper, MapperWithId},
+  router::dto::request::room::{NewRoomDto, UpdateRoomDto, UpdateRoomDtoParams},
+  service::{room as RoomService, structs as SerivceStructs}
 };
 
 use sea_orm::DatabaseConnection;
-
-use crate::{
-  common::structs::{
-      BaseResponse,
-      // ErrorResponse
-    },
-  router::dto::request::room::{NewRoomDto, UpdateRoomDto, UpdateRoomDtoParams} 
-};
-
 
 #[post("/rooms")]
 pub async fn create_rooms(
@@ -23,7 +17,7 @@ pub async fn create_rooms(
 ) -> impl Responder {
   let result = RoomService::create_room(
     data.get_ref(),
-    RoomStructs::NewRoom::map(body.0)
+    SerivceStructs::NewRoom::map(body.0)
   ).await;
 
   match result {
@@ -76,7 +70,8 @@ pub async fn get_room
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>
 ) -> impl Responder {
-  let result = RoomService::get_room(data.get_ref(), path.abs()).await;
+  let room_id = path.into_inner();
+  let result = RoomService::get_room(data.get_ref(), room_id).await;
 
   match result {
     Ok(Some(v)) => {
@@ -90,7 +85,7 @@ pub async fn get_room
       HttpResponse::NotFound().json(ErrorResponse::<i32> {
         result_code: 400,
         result_msg: String::from("NotFound"),
-        result_data: Some(path.abs()),
+        result_data: Some(room_id),
         error_data: ErrorData {
           error_code: 400,
           error_msg: "Room not found".to_string()
@@ -116,7 +111,7 @@ pub async fn update_room(
 ) -> impl Responder {
   let result = RoomService::update_room(
     data.get_ref(),
-    RoomStructs::UpdateRoom::map_with_id(path.abs(), body.0)
+    SerivceStructs::UpdateRoom::map_with_id(path.abs(), body.0)
   ).await;
 
   match result {

@@ -10,7 +10,7 @@ pub async fn get_joined_user_by_id (
   JoinedUser::find_by_id(id).one(db).await
 }
 
-pub async fn get_joined_user_by_room_id (
+pub async fn get_joined_users_by_room_id (
   db: &DatabaseConnection,
   room_id: i32
 ) -> Result<Vec<joined_user::Model>, DbErr> {

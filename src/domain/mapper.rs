@@ -1,11 +1,11 @@
 use crate::{
   repository::structs::{
-    NewRoomModel, UpdateRoomModel, NewUserModel
-  }, 
-  service::structs::{
-    NewRoom, NewUser, Room, UpdateRoom, User
+    NewRoomModel, NewUserModel, UpdateRoomModel, NewDrawItemModel
   },
-  router::dto
+  router::dto, 
+  service::structs::{
+    Draw, NewDrawItem, NewRoom, NewUser, Room, UpdateRoom, User, DrawItem
+  }
 };
 use super::structs::{
   SetDrawIncludeOwnerFlag, SetDrawOrderFlag, RoomStatusFlag
@@ -13,10 +13,11 @@ use super::structs::{
 use chrono::Utc;
 use entity::{
   room::Model as RoomModel,
-  joined_user::Model as JoinedUserModel
+  joined_user::Model as JoinedUserModel,
+  draw::Model as DrawModle,
+  draw_item::Model as DrawItemModel
 };
 use rand::Rng;
-use serde_json::Map;
 
 pub trait Mapper<From, To> {
   fn map(from: From) -> To;
@@ -226,6 +227,55 @@ impl Mapper<Self, dto::response::joined_user::UserDto> for User{
         tag: entity.tag,
         room_id: entity.room_id,
         created_at: entity.created_at,
+    }
+  }
+}
+
+impl Mapper<DrawModle, Self> for Draw {
+  fn map(model: DrawModle) -> Self {
+    Self {
+      id: model.id,
+      room_id: model.room_id,
+      user_id: model.user_id,
+      draw_item_id: model.draw_item_id,
+      created_at: model.created_at,
+    }
+  }
+}
+
+impl MapperWithId<i32, dto::request::draw_item::NewDrawItemsDto, Self> for NewDrawItem {
+  fn map_with_id(room_id: i32, dto:  dto::request::draw_item::NewDrawItemsDto) -> Self {
+    NewDrawItem {
+      room_id,
+      name: dto.name,
+      seq: dto.seq,
+      qty: dto.qty,
+      created_at: dto.created_at,
+    }
+  }
+}
+
+impl Mapper<Self, NewDrawItemModel> for NewDrawItem {
+  fn map(entity: Self) -> NewDrawItemModel {
+    NewDrawItemModel{
+      name: entity.name,
+      seq: entity.seq,
+      room_id: entity.room_id,
+      qty: entity.qty,
+      created_at: entity.created_at
+    }
+  }
+}
+
+impl Mapper<DrawItemModel, Self> for DrawItem {
+  fn map(model: DrawItemModel) -> Self {
+    Self {
+      id: model.id,
+      room_id: model.room_id,
+      name: model.name,
+      seq: model.seq,
+      qty: model.qty,
+      created_at: model.created_at
     }
   }
 }

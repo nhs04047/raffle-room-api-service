@@ -1,5 +1,5 @@
 use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait,ColumnTrait, QueryFilter, Set};
-use entity::draw::{self, Entity as Draw};
+use entity::{draw::{self, Entity as Draw}};
 
 use super::structs;
 
