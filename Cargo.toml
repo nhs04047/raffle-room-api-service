@@ -17,4 +17,7 @@ chrono = { version = "0.4", features = ["serde"] }
 entity = { path = "entity" }
 migration = { path = "migration" }
 rand = "0.8.5"
+log = "0.4"
+env_logger = "0.9"
+futures = "0.3"
 

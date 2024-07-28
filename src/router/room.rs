@@ -1,4 +1,5 @@
 use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
+use log::info;
 
 use crate::{
   common::structs::{ErrorData, BaseResponse, ErrorResponse},
@@ -15,6 +16,7 @@ pub async fn create_rooms(
   body: web::Json<NewRoomDto>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
+  info!("Attempting to parse JSON data: {}", body.created_at);
   let result = RoomService::create_room(
     data.get_ref(),
     SerivceStructs::NewRoom::map(&body.0)
