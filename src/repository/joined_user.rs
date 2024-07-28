@@ -17,11 +17,11 @@ pub async fn get_joined_users_by_room_id (
   JoinedUser::find().filter(joined_user::Column::RoomId.eq(room_id)).all(db).await
 }
 
-pub async fn get_joined_users (
-  db: &DatabaseConnection
-) -> Result<Vec<joined_user::Model>, DbErr>{
-  JoinedUser::find().all(db).await
-}
+// pub async fn get_joined_users (
+//   db: &DatabaseConnection
+// ) -> Result<Vec<joined_user::Model>, DbErr>{
+//   JoinedUser::find().all(db).await
+// }
 
 pub async fn save_joined_user (
   db: &DatabaseConnection,

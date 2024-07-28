@@ -2,18 +2,15 @@ use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 use sea_orm::DatabaseConnection;
 
 use crate::{
-  common::{
-    structs::{
-      BaseResponse,
-      ErrorResponse
-    }
-  },
+  common::structs::{
+      BaseResponse, ErrorData, ErrorResponse
+    },
   service::draw as DrawService
 };
 
 #[get("/rooms/{room_id}/draws")]
 pub async fn get_draws(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
@@ -29,11 +26,15 @@ pub async fn get_draws(
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<i32> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get draw: {}", e)
+          },
+          result_data: Some(room_id),
       })
-    }
+    },
   }
 }

@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct NewUserDto {
   pub name: String,
   pub created_at: NaiveDateTime,

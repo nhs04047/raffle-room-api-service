@@ -1,13 +1,13 @@
-use sea_orm::{ActiveModelTrait, DatabaseConnection, ColumnTrait, DbErr, EntityTrait, InsertResult, QueryFilter, Set};
+use sea_orm::{DatabaseConnection, ColumnTrait, DbErr, EntityTrait, InsertResult, QueryFilter, Set};
 use entity::draw_item::{self, Entity as DrawItem};
 
 use super::structs;
 
-pub async fn get_draw_items (
-  db: &DatabaseConnection
-) -> Result<Vec<draw_item::Model>, DbErr> {
-  DrawItem::find().all(db).await
-}
+// pub async fn get_draw_items (
+//   db: &DatabaseConnection
+// ) -> Result<Vec<draw_item::Model>, DbErr> {
+//   DrawItem::find().all(db).await
+// }
 
 pub async fn get_draws_items_by_room_id (
   db: &DatabaseConnection,
@@ -17,20 +17,20 @@ pub async fn get_draws_items_by_room_id (
 }
 
 
-pub async fn insert_draw_item (
-  db: &DatabaseConnection,
-  data: structs::NewDrawItemModel
-) -> Result<draw_item::Model, DbErr> {
-  let draw_item_model = draw_item::ActiveModel {
-    name: Set(data.name.to_owned()),
-    room_id: Set(data.room_id),
-    seq: Set(data.seq),
-    qty: Set(data.qty),
-    created_at: Set(data.created_at),
-    ..Default::default()
-  };
-  draw_item_model.insert(db).await
-}
+// pub async fn insert_draw_item (
+//   db: &DatabaseConnection,
+//   data: structs::NewDrawItemModel
+// ) -> Result<draw_item::Model, DbErr> {
+//   let draw_item_model = draw_item::ActiveModel {
+//     name: Set(data.name.to_owned()),
+//     room_id: Set(data.room_id),
+//     seq: Set(data.seq),
+//     qty: Set(data.qty),
+//     created_at: Set(data.created_at),
+//     ..Default::default()
+//   };
+//   draw_item_model.insert(db).await
+// }
 
 pub async fn insert_draw_items (
   db: &DatabaseConnection,

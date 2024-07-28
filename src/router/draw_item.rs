@@ -2,15 +2,15 @@ use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
 use sea_orm::DatabaseConnection;
 
 use crate::{
-  common::structs::BaseResponse, domain::mapper::MapperWithId, router::dto::{
-    request::draw_item::NewDrawItemsDto,
-    response::draw_item::DrawItemsDto
-  }, service::{draw_item as DrawItemService, structs as SerivceStructs}
+  common::structs::{BaseResponse, ErrorData, ErrorResponse},
+  domain::mapper::MapperWithId,
+  router::dto::request::draw_item::NewDrawItemsDto,
+  service::{draw_item as DrawItemService, structs as SerivceStructs}
 };
 
 #[post("/rooms/{rooms_id}/draw-items")]
 pub async fn create_draw_items(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   body: web::Json<Vec<NewDrawItemsDto>>,
   data: web::Data<DatabaseConnection>,
@@ -18,7 +18,7 @@ pub async fn create_draw_items(
   let room_id = path.into_inner();
   let result = DrawItemService::create_draw_items(
     data.get_ref(), 
-    body.0.into_iter().map(|dto| SerivceStructs::NewDrawItem::map_with_id(room_id, dto)).collect() 
+    body.iter().map(|dto| SerivceStructs::NewDrawItem::map_with_id(room_id, &dto)).collect() 
   ).await;
 
   match result {
@@ -30,18 +30,22 @@ pub async fn create_draw_items(
         })
     },
     Err(e) => {
-        HttpResponse::InternalServerError().json(BaseResponse::<()> {
-            result_code: 500,
-            result_msg: format!("Error creating room: {}", e),
-            result_data: None,
-        })
+      HttpResponse::InternalServerError().json(ErrorResponse::<&Vec<NewDrawItemsDto>> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error create user: {}", e)
+          },
+          result_data: Some(&body.0),
+      })
     },
   }
 }
 
 #[get("/rooms/{rooms_id}/draw-items")]
 pub async fn get_draw_items(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
@@ -57,11 +61,15 @@ pub async fn get_draw_items(
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<i32> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get draw items user: {}", e)
+          },
+          result_data: Some(room_id),
       })
-    }
+    },
   }
 }

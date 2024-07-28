@@ -3,7 +3,7 @@ use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
 use crate::{
   common::structs::{ErrorData, BaseResponse, ErrorResponse},
   domain::mapper::{Mapper, MapperWithId},
-  router::dto::request::room::{NewRoomDto, UpdateRoomDto, UpdateRoomDtoParams},
+  router::dto::request::room::{NewRoomDto, UpdateRoomDto},
   service::{room as RoomService, structs as SerivceStructs}
 };
 
@@ -11,13 +11,13 @@ use sea_orm::DatabaseConnection;
 
 #[post("/rooms")]
 pub async fn create_rooms(
-  req: HttpRequest,
+  _req: HttpRequest,
   body: web::Json<NewRoomDto>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
   let result = RoomService::create_room(
     data.get_ref(),
-    SerivceStructs::NewRoom::map(body.0)
+    SerivceStructs::NewRoom::map(&body.0)
   ).await;
 
   match result {
@@ -29,18 +29,22 @@ pub async fn create_rooms(
         })
     },
     Err(e) => {
-        HttpResponse::InternalServerError().json(BaseResponse::<()> {
-            result_code: 500,
-            result_msg: format!("Error creating room: {}", e),
-            result_data: None,
-        })
+      HttpResponse::InternalServerError().json(ErrorResponse::<&NewRoomDto> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get room: {}", e)
+          },
+          result_data: Some(&body.0),
+      })
     },
   }
 }
 
 #[get("/rooms")]
 pub async fn get_rooms(
-  req: HttpRequest,
+  _req: HttpRequest,
   data: web::Data<DatabaseConnection>,
 ) ->  impl Responder {
   let result = RoomService::get_rooms(data.get_ref()).await;
@@ -54,19 +58,23 @@ pub async fn get_rooms(
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<i32> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get room: {}", e)
+          },
+          result_data: None,
       })
-    }
+   },
   }
 }
 
 #[get("/rooms/{room_id}")]
 pub async fn get_room
 (
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>
 ) -> impl Responder {
@@ -93,25 +101,29 @@ pub async fn get_room
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<i32> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get room: {}", e)
+          },
+          result_data: None,
       })
-    }
+    },
   }
 }
 
 #[get("/rooms/{room_id}")]
 pub async fn update_room(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   body: web::Json<UpdateRoomDto>,
   data: web::Data<DatabaseConnection>
 ) -> impl Responder {
   let result = RoomService::update_room(
     data.get_ref(),
-    SerivceStructs::UpdateRoom::map_with_id(path.abs(), body.0)
+    SerivceStructs::UpdateRoom::map_with_id(path.abs(), &body.0)
   ).await;
 
   match result {
@@ -123,11 +135,15 @@ pub async fn update_room(
         })
     },
     Err(e) => {
-        HttpResponse::InternalServerError().json(BaseResponse::<()> {
-            result_code: 500,
-            result_msg: format!("Error creating room: {}", e),
-            result_data: None,
-        })
+      HttpResponse::InternalServerError().json(ErrorResponse::<&UpdateRoomDto> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error update room: {}", e)
+          },
+          result_data: Some(&body.0),
+      })
     },
   }
 }

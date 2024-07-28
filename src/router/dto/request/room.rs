@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct NewRoomDto {
   pub name: String,
   pub password: String,
@@ -10,7 +10,7 @@ pub struct NewRoomDto {
   pub created_at: NaiveDateTime,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct UpdateRoomDto {
   pub name: Option<String>,
   pub password: Option<String>,
@@ -18,7 +18,7 @@ pub struct UpdateRoomDto {
   pub set_draw_order: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct UpdateRoomDtoParams {
   pub id: i32,
   pub name: Option<String>,

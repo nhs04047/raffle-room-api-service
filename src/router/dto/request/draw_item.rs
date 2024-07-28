@@ -1,8 +1,8 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct NewDrawItemsDto {
   pub name: String,
   pub seq: i32,

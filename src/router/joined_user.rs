@@ -8,7 +8,7 @@ use crate::{
 
 #[post("/rooms/{room_id}/users")]
 pub async fn create_user(
-  req: HttpRequest,
+  _req: HttpRequest,
   body: web::Json<NewUserDto>,
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>,
@@ -16,7 +16,7 @@ pub async fn create_user(
   let room_id = path.into_inner();
   let result = JoinedUserService::create_user(
     data.get_ref(), 
-    SerivceStructs::NewUser::map_with_id(room_id, body.0)
+    SerivceStructs::NewUser::map_with_id(room_id, &body.0)
   ).await;
 
   match result {
@@ -28,18 +28,22 @@ pub async fn create_user(
         })
     },
     Err(e) => {
-        HttpResponse::InternalServerError().json(BaseResponse::<()> {
-            result_code: 500,
-            result_msg: format!("Error creating room: {}", e),
-            result_data: None,
-        })
+      HttpResponse::InternalServerError().json(ErrorResponse::<&NewUserDto> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error create user: {}", e)
+          },
+          result_data: Some(&body),
+      })
     },
   }
 }
 
 #[get("/rooms/{room_id}/users")]
 pub async fn get_users(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<i32>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
@@ -55,18 +59,22 @@ pub async fn get_users(
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<i32> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get users: {}", e)
+          },
+          result_data: Some(room_id),
       })
-    }
+    },
   }
 }
 
 #[get("/rooms/{room_id}/users/{user_id}")]
 pub async fn get_user(
-  req: HttpRequest,
+  _req: HttpRequest,
   path: web::Path<(i32, i32)>,
   data: web::Data<DatabaseConnection>,
 ) -> impl Responder {
@@ -94,12 +102,16 @@ pub async fn get_user(
       })
     },
     Err(e) => {
-      HttpResponse::InternalServerError().json(BaseResponse::<()> {
-        result_code: 500,
-        result_msg: format!("Error get rooms: {}", e),
-        result_data: None,
+      HttpResponse::InternalServerError().json(ErrorResponse::<(i32, i32)> {
+          result_code: 500,
+          result_msg: format!("Unexpected Error"),
+          error_data: ErrorData {
+            error_code: 500,
+            error_msg: format!("Error get user: {}", e)
+          },
+          result_data: Some((_room_id, user_id)),
       })
-    }
+    },
   }
 }
 

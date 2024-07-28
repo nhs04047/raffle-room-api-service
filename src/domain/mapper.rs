@@ -28,8 +28,8 @@ pub trait MapperWithId<Id, From, To> {
 }
 
 
-impl Mapper<dto::request::room::NewRoomDto, Self> for NewRoom {
-  fn map(dto: dto::request::room::NewRoomDto) -> Self {
+impl Mapper<&dto::request::room::NewRoomDto, Self> for NewRoom {
+  fn map(dto: &dto::request::room::NewRoomDto) -> Self {
     let set_draw_include_owner = match dto.set_draw_include_owner {
       0 => SetDrawIncludeOwnerFlag::NotIncluded,
       1 => SetDrawIncludeOwnerFlag::Included,
@@ -43,8 +43,8 @@ impl Mapper<dto::request::room::NewRoomDto, Self> for NewRoom {
     };
 
     NewRoom {
-      name: dto.name,
-      password: dto.password,
+      name: dto.name.clone(),
+      password: dto.password.clone(),
       set_draw_include_owner,
       set_draw_order,
       status: RoomStatusFlag::RecruitingParticipants,
@@ -96,12 +96,12 @@ impl Mapper<RoomModel, Self> for Room {
         _ => SetDrawOrderFlag::Bulk
       };
   
-      let status = match model.status {
-        0 => RoomStatusFlag::RecruitingParticipants,
-        1=> RoomStatusFlag::RecruitmentClosed,
-        2=> RoomStatusFlag::DrawCompleted,
-        _ => RoomStatusFlag::RecruitingParticipants
-      };
+      // let status = match model.status {
+      //   0 => RoomStatusFlag::RecruitingParticipants,
+      //   1=> RoomStatusFlag::RecruitmentClosed,
+      //   2=> RoomStatusFlag::DrawCompleted,
+      //   _ => RoomStatusFlag::RecruitingParticipants
+      // };
   
       Self {
         id: model.id,
@@ -150,8 +150,8 @@ impl Mapper<Self, UpdateRoomModel> for UpdateRoom {
     }
 }
 
-impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
-  fn map_with_id(id: i32, entity: dto::request::room::UpdateRoomDto) -> Self {
+impl MapperWithId<i32, &dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
+  fn map_with_id(id: i32, entity: &dto::request::room::UpdateRoomDto) -> Self {
 
     let set_draw_include_owner = match entity.set_draw_include_owner {
       Some(0) => Some(SetDrawIncludeOwnerFlag::NotIncluded),
@@ -159,7 +159,7 @@ impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
       Some(_) | None => None,
     };
 
-    let set_draw_order = match entity.set_draw_order {
+    let set_draw_order = match &entity.set_draw_order {
       Some(v) => {
         match v.as_str() {
           "bulk" => Some(SetDrawOrderFlag::Bulk),
@@ -172,8 +172,8 @@ impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
 
     Self {
         id,
-        name: entity.name,
-        password: entity.password,
+        name: entity.name.clone(),
+        password: entity.password.clone(),
         set_draw_include_owner,
         set_draw_order,
         status: None,
@@ -182,13 +182,13 @@ impl MapperWithId<i32, dto::request::room::UpdateRoomDto, Self> for UpdateRoom {
   }
 }
 
-impl MapperWithId<i32, dto::request::joined_user::NewUserDto, Self> for NewUser {
-  fn map_with_id(room_id: i32, dto: dto::request::joined_user::NewUserDto) -> Self {
+impl MapperWithId<i32, &dto::request::joined_user::NewUserDto, Self> for NewUser {
+  fn map_with_id(room_id: i32, dto: &dto::request::joined_user::NewUserDto) -> Self {
     let random_number: u32 = rand::thread_rng().gen_range(1000..10000);
     let tag = format!("#{:04}", random_number);
 
     NewUser {
-      name: dto.name,
+      name: dto.name.clone(),
       room_id,
       tag,
       created_at: dto.created_at
@@ -243,11 +243,11 @@ impl Mapper<DrawModle, Self> for Draw {
   }
 }
 
-impl MapperWithId<i32, dto::request::draw_item::NewDrawItemsDto, Self> for NewDrawItem {
-  fn map_with_id(room_id: i32, dto:  dto::request::draw_item::NewDrawItemsDto) -> Self {
+impl MapperWithId<i32, &dto::request::draw_item::NewDrawItemsDto, Self> for NewDrawItem {
+  fn map_with_id(room_id: i32, dto: &dto::request::draw_item::NewDrawItemsDto) -> Self {
     NewDrawItem {
       room_id,
-      name: dto.name,
+      name: dto.name.clone(),
       seq: dto.seq,
       qty: dto.qty,
       created_at: dto.created_at,
