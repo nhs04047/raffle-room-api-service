@@ -14,7 +14,7 @@ pub async fn create_user(
   let result = JoinedUserRepository::save_joined_user(db, new_user_model).await;
 
   match result {
-    Ok(model) => Ok(structs::User::map(model)),
+    Ok(model) => Ok(structs::User::map(&model)),
     Err(e) => Err(format!("JoinedUserService::create_user: {}", e.to_string())),
   }
 }
@@ -41,7 +41,7 @@ pub async fn get_users_by_room_id(
 
   match result {
     Ok(models) => {
-      Ok(models.into_iter().map(|model| structs::User::map(model)).collect())
+      Ok(models.iter().map(|model| structs::User::map(model)).collect())
     },
     Err(e) => Err(format!("JoinedUserService::get_users_by_room_id: {}", e.to_string()))
   }
@@ -55,7 +55,7 @@ pub async fn get_user(
 
   match result {
     Ok(Some(model)) => {
-      Ok(Some(structs::User::map(model)))
+      Ok(Some(structs::User::map(&model)))
     },
     Ok(None) => Ok(None),
     Err(e) => {

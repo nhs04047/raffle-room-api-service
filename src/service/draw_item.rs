@@ -29,7 +29,7 @@ pub async fn get_darw_items_room_id(
 
   match result {
     Ok(models) => {
-      Ok(models.into_iter().map(|model| structs::DrawItem::map(model)).collect())
+      Ok(models.into_iter().map(|model| structs::DrawItem::map(&model)).collect())
     },
     Err(e) => Err(format!("DrawItemService::get_darw_items_room_id: {}", e.to_string()))
       

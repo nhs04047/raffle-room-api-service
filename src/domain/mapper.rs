@@ -207,8 +207,8 @@ impl Mapper<Self, NewUserModel> for NewUser {
   }
 }
 
-impl Mapper<JoinedUserModel, Self> for User {
-  fn map(model: JoinedUserModel) -> Self {
+impl Mapper<&JoinedUserModel, Self> for User {
+  fn map(model: &JoinedUserModel) -> Self {
     Self {
         id: model.id,
         name: model.name,
@@ -231,8 +231,8 @@ impl Mapper<Self, dto::response::joined_user::UserDto> for User{
   }
 }
 
-impl Mapper<DrawModle, Self> for Draw {
-  fn map(model: DrawModle) -> Self {
+impl Mapper<&DrawModle, Self> for Draw {
+  fn map(model: &DrawModle) -> Self {
     Self {
       id: model.id,
       room_id: model.room_id,
@@ -267,8 +267,8 @@ impl Mapper<Self, NewDrawItemModel> for NewDrawItem {
   }
 }
 
-impl Mapper<DrawItemModel, Self> for DrawItem {
-  fn map(model: DrawItemModel) -> Self {
+impl Mapper<&DrawItemModel, Self> for DrawItem {
+  fn map(model: &DrawItemModel) -> Self {
     Self {
       id: model.id,
       room_id: model.room_id,
